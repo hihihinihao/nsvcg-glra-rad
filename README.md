@@ -10,6 +10,8 @@
 
 > 这不是 GLRA 原版复现：GLRA 原版的 `fc` 分类头被 RAD 替换；ViT 冻结，BERT/RA/RAD 训练。
 
+> ⚠️ **2026-11-20 更正：** 早期 FR 结果（all 78.19 / clean 75.75）**已作废**——当时 `forward` 在 eval 时仍把 `labels` 转成 one-hot 传给 RAD，`Transformer.forward` 用 `gt_target is not None` 分支，导致 **test 标签泄露**。当前代码已改为：**eval 时 `gt=None`、不传 labels**；请只用修复后重跑的数字。
+
 ---
 
 ## 1. 目录
@@ -216,7 +218,7 @@ MRE-MI 的 all-test 有 **1,018/4,500 条与 train 精确重叠**（句子+关�
 
 - 报 all-test 时注明重叠；
 - 如果要做 clean 口径，去掉 test 中“tokens+relation”在 train 出现的行，再算指标；
-- 仓库里的 `glra_front_rad` 实验 clean VS 约 75.75（all 78.19，seed42）。
+- 早期 FR 的 all 78.19 / clean 75.75 **已因 eval label leak 作废**；修复后等待重跑，不要引用旧数字。
 
 MNRE 的精确重叠是 **0 行**（按 tokens+relation），不受这个影响。
 

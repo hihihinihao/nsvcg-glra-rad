@@ -1,5 +1,11 @@
 # GLRA 前端 + NSVCG RAD（2026-11-20）
 
+> ⚠️ **2026-11-20 23:40 更正：本文以下结果全部作废。**  
+> 原因：`GLRAFrontRAD.forward` 在 eval 时仍把 `labels` 转成 one-hot 传给 RAD；
+> `Transformer.forward` 用 `gt_target is not None` 分支，**test 标签被用于前向**。
+> 已修：eval 时 `gt=None`、不传 labels；`78.19 / 75.75` 等旧数字**不可引用**，
+> 等待修复后重跑。
+
 > 方向：保留 GLRA 的 **BERT + ViT + RA** 前端，把 GLRA 原来的 `fc` 分类头换成
 > NSVCG 的 **RAD diffusion/denoising** 后端。  
 > 代码：`~/mre/MRE-MI/glra_rad_20261120/`  

@@ -45,6 +45,16 @@ def main():
     loss.backward()
     print("loss", float(loss), "OK")
 
+    # Regression test for the eval label leak: at eval, passing labels must not
+    # change the logits (gt must be None inside the RAD transformer).
+    model.eval()
+    with torch.no_grad():
+        torch.manual_seed(0)
+        a = model(*batch[:5])[0]
+        torch.manual_seed(0)
+        b = model(*batch[:5], batch[5])[0]
+    print("eval label-independent:", bool(torch.allclose(a, b, atol=1e-6)))
+
 
 if __name__ == "__main__":
     main()

@@ -48,10 +48,12 @@ class GLRAFrontRAD(nn.Module):
         self.fc = nn.Linear(768, num_class)
 
     def forward(self, input_ids, token_type_ids, attention_mask,
-                main_images, aux_images, labels):
+                main_images, aux_images, labels=None):
         cond = self.front.encode(input_ids, attention_mask, token_type_ids,
                                  main_images, aux_images)
-        gt = F.one_hot(labels, self.fc.out_features)
+        gt = None
+        if self.training and labels is not None:
+            gt = F.one_hot(labels, self.fc.out_features)
         diff = self.transformer(cond, gt, None)
         cls = self.fc(cond[:, 0, :])
         return diff, cls
@@ -80,7 +82,7 @@ def evaluate(model, loader):
     with torch.no_grad():
         for batch in loader:
             batch = to_device(batch)
-            diff, _ = model(*batch[:5], batch[5])
+            diff, _ = model(*batch[:5])
             logits.append(diff.cpu().numpy())
             gold.append(batch[5].cpu().numpy())
     z = np.concatenate(logits)
