@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.npz
+*.pt
+*.pth
+runs/*
+!runs/.keep
+logs/*
+!logs/.keep
+.venv/

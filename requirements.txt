@@ -1,0 +1,6 @@
+torch>=2.0
+transformers==4.47.1
+numpy
+scipy
+scikit-learn
+Pillow
