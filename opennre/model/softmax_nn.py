@@ -105,13 +105,10 @@ class DenoiseNetwork(nn.Module):
         self.num_class = num_class
         self.dropout=dropout
 
-        # 时间编码器
-        # self.time_embed = SinusoidalPositionEmbeddings(d_model) # diff_mom 正余弦编码
-        # from DiT_module import TimestepEmbedder
+        # 时间编码�?        # self.time_embed = SinusoidalPositionEmbeddings(d_model) # diff_mom 正余弦编�?        # from DiT_module import TimestepEmbedder
         self.time_embed = TimestepEmbedder(self.module_dim)  # DiT 正余弦加mlp
 
-        # 噪声编码器
-        # 4000 --> d
+        # 噪声编码�?        # 4000 --> d
         # self.noise_embed = MLP(num_class,d_model, d_model, 1) # diff_mom MLP
         self.noise_embed = nn.Linear(self.num_class, self.module_dim)  # DiT linear
         from .Layers import DecoderLayer_woSA, DecoderLayerPre_woSA, DecoderLayerPre_Enc, DecoderLayer_Enc, \
@@ -147,11 +144,11 @@ class DenoiseNetwork(nn.Module):
                 ):
         # 输入 span 噪声数据 b, d
         # 条件数据 b, l, d
-        # 时间 即 强度 b
+        # 时间 �?强度 b
         ###  b, n   b, l, d    b
-        ### 时间正余弦编码 b, d
+        ### 时间正余弦编�?b, d
         time_emb = self.time_embed(time)  # b, d
-        # span = inverse_sigmoid(span).sigmoid() # 反向sigmoid(sigmoid的逆函数)+sigmoid  # b, n
+        # span = inverse_sigmoid(span).sigmoid() # 反向sigmoid(sigmoid的逆函�?+sigmoid  # b, n
         # condition_time = condition + time_emb.unsqueeze(1)
         ### Span embedding
         output = self.noise_embed(span.to(torch.float32)) #+ 0.1 * time_emb  # b, d
@@ -267,15 +264,13 @@ class Transformer(nn.Module):
                  ):
         super().__init__()
 
-        # normalize_before transformer前是否进行norm，默认 false
+        # normalize_before transformer前是否进行norm，默�?false
         self.num_class = num_class
         self.d_model = d_model  # 模型维度
-        self.nhead = nhead  # 多头注意力头数
-        self.dec_layers = num_decoder_layers  # 降噪网络的 decoder 层数
+        self.nhead = nhead  # 多头注意力头�?        self.dec_layers = num_decoder_layers  # 降噪网络�?decoder 层数
         # self.num_queries = num_queries
         self.num_patterns = num_patterns  # 默认 0
-        self.denoise_network = denoise_network  # 降噪网络中的 decoder 层
-
+        self.denoise_network = denoise_network  # 降噪网络中的 decoder �?
         # build diffusion
         timesteps = steps  # 训练步数
         sampling_timesteps = steps  # 推理（采样）步数
@@ -455,14 +450,14 @@ class Transformer(nn.Module):
         param gt_boxes: (center, long) # b, n
         """
         time = torch.randint(0, self.num_timesteps, (x_start.size(0),),
-                             device=x_start.device).long()  # 随机时间步 b
+                             device=x_start.device).long()  # 随机时间�?b
         noise = torch.randn_like(x_start.float())  # 随机噪声  b, n
 
-        x_start = (x_start * 2. - 1.) * self.scale  # 归一化 [0, 1] --> [-2, 2]
+        x_start = (x_start * 2. - 1.) * self.scale  # 归一�?[0, 1] --> [-2, 2]
         # noise sample
         x_t = self.q_sample(x_start=x_start, t=time, noise=noise)  # 加噪 # b, n
         x_t = torch.clamp(x_t, min=-1 * self.scale, max=self.scale)  # 限制 [-2, 2]
-        x_t = ((x_t / self.scale) + 1) / 2.  # 归一化回来 [-2, 2] --> [0, 1]
+        x_t = ((x_t / self.scale) + 1) / 2.  # 归一化回�?[-2, 2] --> [0, 1]
 
         return x_t, noise, time
 
@@ -490,7 +485,7 @@ class Transformer(nn.Module):
         """
         #condition=self.encoder(condition)+condition
 
-        if gt_target is not None:
+        if self.training and gt_target is not None:
             ### span normalization
             x_t_spans, noises, time_t = self.prepare_targets(gt_target)  # b, d   b, d    b
             # time_t = time_t.squeeze(-1) # b
