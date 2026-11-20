@@ -218,7 +218,7 @@ MRE-MI 的 all-test 有 **1,018/4,500 条与 train 精确重叠**（句子+关�
 
 - 报 all-test 时注明重叠；
 - 如果要做 clean 口径，去掉 test 中“tokens+relation”在 train 出现的行，再算指标；
-- 早期 FR 的 all 78.19 / clean 75.75 **已因 eval label leak 作废**；修复后等待重跑，不要引用旧数字。
+- 早期 FR 的 all 78.19 / clean 75.75 **已因 eval label leak 作废**。修正后 seed42：**all VS 67.06 / clean VS 63.08**，低于 B0（70.11/67.06）和 H1（71.41/68.89）；不要引用旧数字。
 
 MNRE 的精确重叠是 **0 行**（按 tokens+relation），不受这个影响。
 
